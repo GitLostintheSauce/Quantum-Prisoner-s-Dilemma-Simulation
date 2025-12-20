@@ -1,0 +1,227 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "toc_visible": true,
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "top-overview"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/GitLostintheSauce/Quantum-Prisoner-s-Dilemma-Simulation/blob/main/Copy_of_entanglement_as_a_resource.ipynb\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open in Colab\"/></a>\n",
+        "\n",
+        "# Quantum Prisoners' Dilemma — Cleaned Notebook\n",
+        "\n",
+        "This cleaned notebook consolidates installs, imports, explanations, and code into a clear, reproducible workflow. It prepares the initial entangled state, implements the Q (iZ) strategy, constructs the full QPD circuit, simulates it, computes payoffs, and visualizes results. Duplicate cells and repeated narrative blocks from the original have been removed."
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "install-packages"
+      },
+      "source": [
+        "import sys\n",
+        "!{sys.executable} -m pip install -q 'qiskit>=2.1.0' 'qiskit-ibm-runtime>=0.40.1' 'qiskit-aer>=0.17.0' numpy pylatexenc matplotlib\n"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "imports"
+      },
+      "source": [
+        "import numpy as np\n",
+        "import matplotlib.pyplot as plt\n",
+        "from qiskit import QuantumCircuit\n",
+        "from qiskit_aer import Aer\n",
+        "from qiskit.visualization import plot_histogram\n"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "task-description"
+      },
+      "source": [
+        "## Task — Setup and simulate Quantum Prisoners' Dilemma\n",
+        "\n",
+        "Overview:\n",
+        "- Prepare an initial entangled (Bell) state for two qubits.\n",
+        "- Implement the 'Q' strategy (iZ) as an rz(-π).\n",
+        "- Build the full game circuit: entangle → players' strategies → disentangle → measure.\n",
+        "- Simulate on the Qiskit Aer qasm_simulator, compute average payoffs using the standard payoff matrix, and plot results.\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "helper-functions"
+      },
+      "source": [
+        "def prepare_entanglement(qc: QuantumCircuit, q0: int = 0, q1: int = 1) -> None:\n",
+        "    \"\"\"Apply H on q0 and CX(q0, q1) to produce a |Φ+> Bell pair.\"\"\"\n",
+        "    qc.h(q0)\n",
+        "    qc.cx(q0, q1)\n",
+        "\n",
+        "def apply_q_strategy(qc: QuantumCircuit, qubit: int) -> None:\n",
+        "    \"\"\"Apply the Q strategy (iZ) implemented as rz(-π) on the target qubit.\"\"\"\n",
+        "    qc.rz(-np.pi, qubit)\n",
+        "\n",
+        "def build_qpd_circuit(apply_q_to_alice: bool = True, apply_q_to_bob: bool = True, measure: bool = True) -> QuantumCircuit:\n",
+        "    \"\"\"Builds the Quantum Prisoners' Dilemma circuit.\n",
+        "    - 2 qubits, 2 classical bits\n",
+        "    - prepare entanglement, apply strategies, unentangle, measure\n",
+        "    \"\"\"\n",
+        "    qc = QuantumCircuit(2, 2, name='Quantum Prisoners Dilemma')\n",
+        "    prepare_entanglement(qc, 0, 1)\n",
+        "    qc.barrier()\n",
+        "    if apply_q_to_alice:\n",
+        "        apply_q_strategy(qc, 0)\n",
+        "    if apply_q_to_bob:\n",
+        "        apply_q_strategy(qc, 1)\n",
+        "    qc.barrier()\n",
+        "    # Unentangle (inverse of prepare_entanglement)\n",
+        "    qc.cx(0, 1)\n",
+        "    qc.h(0)\n",
+        "    if measure:\n",
+        "        qc.measure([0, 1], [0, 1])\n",
+        "    return qc\n",
+        "\n",
+        "def simulate_and_compute_payoffs(qc: QuantumCircuit, shots: int = 1024):\n",
+        "    simulator = Aer.get_backend('qasm_simulator')\n",
+        "    job = simulator.run(qc, shots=shots)\n",
+        "    result = job.result()\n",
+        "    counts = result.get_counts(qc)\n",
+        "\n",
+        "    # Payoff matrix mapping measured bitstring to (alice, bob)\n",
+        "    payoff_matrix = {\n",
+        "        '00': {'alice': 3, 'bob': 3},  # CC\n",
+        "        '01': {'alice': 0, 'bob': 5},  # C,D\n",
+        "        '10': {'alice': 5, 'bob': 0},  # D,C\n",
+        "        '11': {'alice': 1, 'bob': 1}   # D,D\n",
+        "    }\n",
+        "\n",
+        "    alice_total = 0\n",
+        "    bob_total = 0\n",
+        "    for outcome, count in counts.items():\n",
+        "        if outcome in payoff_matrix:\n",
+        "            alice_total += payoff_matrix[outcome]['alice'] * count\n",
+        "            bob_total += payoff_matrix[outcome]['bob'] * count\n",
+        "\n",
+        "    alice_avg = alice_total / shots\n",
+        "    bob_avg = bob_total / shots\n",
+        "    return counts, alice_avg, bob_avg\n",
+        "\n",
+        "def plot_payoffs(alice_avg: float, bob_avg: float):\n",
+        "    players = ['Alice', 'Bob']\n",
+        "    payoffs = [alice_avg, bob_avg]\n",
+        "    plt.figure(figsize=(6,4))\n",
+        "    bars = plt.bar(players, payoffs, color=['skyblue','lightcoral'])\n",
+        "    plt.ylim(0, max(payoffs) + 1)\n",
+        "    plt.ylabel('Average Payoff')\n",
+        "    plt.title('Quantum Prisoners Dilemma — Average Payoffs')\n",
+        "    for bar, val in zip(bars, payoffs):\n",
+        "        plt.text(bar.get_x() + bar.get_width()/2, val + 0.05, f\"{val:.2f}\", ha='center')\n",
+        "    plt.show()\n"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "build-and-draw"
+      },
+      "source": [
+        "## Build circuit (both players use Q) and visualize"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "build-circuit-cell"
+      },
+      "source": [
+        "qpd_q_q = build_qpd_circuit(apply_q_to_alice=True, apply_q_to_bob=True, measure=True)\n",
+        "print('Quantum Prisoners Dilemma circuit (both use Q):')\n",
+        "qpd_q_q.draw('mpl')"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "simulate-cell-markdown"
+      },
+      "source": [
+        "## Simulate and compute payoffs"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "simulate-cell"
+      },
+      "source": [
+        "shots = 1024\n",
+        "counts, alice_avg, bob_avg = simulate_and_compute_payoffs(qpd_q_q, shots=shots)\n",
+        "print('Measurement counts:', counts)\n",
+        "print(f'Average Payoff for Alice: {alice_avg:.2f}')\n",
+        "print(f'Average Payoff for Bob:   {bob_avg:.2f}')"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "plot-cell"
+      },
+      "source": [
+        "plot_payoffs(alice_avg, bob_avg)\n",
+        "\n",
+        "# Also show measurement histogram\n",
+        "plot_histogram(counts)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "summary-and-next-steps"
+      },
+      "source": [
+        "## Summary & Next steps\n",
+        "\n",
+        "- This cleaned notebook centralizes installs, imports, and helper functions so you can easily modify which players use which strategies and run batch experiments.\n",
+        "- Observing the counts and computed averages confirms whether the Q strategy produces the expected cooperative outcome for both players.\n",
+        "\n",
+        "Next steps you might try:\n",
+        "- Vary strategies (apply Q to only Alice or only Bob, or replace Q with classical strategies encoded as rotations) and compare payoffs.\n",
+        "- Sweep over parameterized strategies (e.g., rz(θ) with θ in a grid) and plot payoff landscapes.\n",
+        "- Wrap runs in a function to compute expected payoffs analytically (using statevector) as a complement to sampling-based simulation.\n"
+      ]
+    }
+  ]
+}
