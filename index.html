@@ -160,10 +160,9 @@
       <span>Quantum Game Theory · Broadsheet</span>
       <span>Where physics meets economics</span>
     </div>
-    <h1>The Prisoner's Dilemma,<br><em>Entangled</em></h1>
-    <p class="dek">An interactive account of how sharing a pair of entangled qubits can
-      turn betrayal into cooperation, and what that could mean for the cartels, price wars, and
-      standoffs that economists model with this very game.</p>
+    <h1>How Entanglement<br><em>Rewrites</em> a Market</h1>
+    <p class="dek">An interactive account of the quantum Prisoner's Dilemma: how sharing a pair of entangled
+      qubits can turn betrayal into cooperation, dissolve a price war, and even keep a monopoly from forming.</p>
     <div class="rule2"><span></span>By Eleanor Adams<span></span></div>
   </div>
 
@@ -351,7 +350,54 @@
         cannot?</b> Escaping this dilemma, more collective welfare from the same players and the same payoffs,
         is the cleanest example I know.</p>
 
-      <h2 class="sec"><span class="no">§ IV</span>Reproduce every number</h2>
+      <h2 class="sec"><span class="no">§ IV</span>Play the regulator</h2>
+      <p class="stand">The dilemma's escape hatch, turned into an antitrust tool.</p>
+      <p>Wang's chapter turns entanglement into policy through <b>Cournot's duopoly</b>: two firms choosing how
+        much to produce, where Firm 1 sits at a cost disadvantage σ against a leaner rival. Classically, once σ
+        passes 1 the weaker firm is driven out and the market tips to <b>monopoly</b>. Below, you set both the
+        asymmetry σ and the entanglement γ a regulator imposes, and watch who survives.</p>
+    </div>
+
+    <figure class="console">
+      <div class="fcap"><span>Figure 2: <b>The antitrust dial</b></span><span>you are the regulator</span></div>
+      <div class="cbody">
+        <div class="players">
+          <div class="pl">
+            <div class="top"><h3>The market</h3><span class="lab">Cournot duopoly</span></div>
+            <div class="sld"><label><span>σ: Firm 1's cost disadvantage</span><b id="sigLab">0.80</b></label>
+              <input type="range" id="sig" min="0" max="2" step="0.001" value="0.8"></div>
+            <div class="sld"><label><span>γ: entanglement (the regulator's dial)</span><b id="cgamLab">0.00</b></label>
+              <input type="range" id="cgam" min="0" max="2" step="0.001" value="0"></div>
+            <div style="margin-top:16px">
+              <div class="prow"><div class="pl2"><span class="nm"><b>Firm 1</b> <span>the weaker firm</span></span><span class="pc" id="q1p">…</span></div><div class="track"><div class="fill" id="q1bar" style="background:var(--rust)"></div></div></div>
+              <div class="prow"><div class="pl2"><span class="nm"><b>Firm 2</b> <span>the leaner rival</span></span><span class="pc" id="q2p">…</span></div><div class="track"><div class="fill" id="q2bar" style="background:var(--violet)"></div></div></div>
+            </div>
+            <div class="pcards" style="margin-top:16px">
+              <div class="pc"><div class="w">Total output</div><div class="v" id="Qval" style="font-size:1.7rem">…</div></div>
+              <div class="pc"><div class="w">Consumer price</div><div class="v" id="Pval" style="font-size:1.7rem">…</div></div>
+            </div>
+            <div class="vd" id="cVerdict" style="margin-top:14px">…</div>
+          </div>
+          <div class="pl">
+            <div class="top"><h3>Who survives</h3><span class="lab">σ vs γ phase map</span></div>
+            <canvas id="cphase" width="380" height="320"></canvas>
+            <div class="leg"><span><i style="background:var(--rust)"></i>monopoly (Firm 1 out)</span><span><i style="background:var(--violet)"></i>duopoly survives</span><span>● you</span></div>
+            <p class="cap" style="font-size:12px;color:var(--faint);margin-top:10px">The curve is the survival
+              threshold σ_c(γ). At γ = 0 it sits at σ = 1 (the classical limit); the regulator can climb it
+              toward σ = 2 by adding entanglement.</p>
+          </div>
+        </div>
+      </div>
+    </figure>
+
+    <div class="col">
+      <p>Raising γ lets the weaker firm withstand a larger disadvantage (it survives up to σ &lt; 2), heading
+        off the monopoly. But notice total output <b>falls</b> as γ rises, so a regulator trades cheaper
+        consumer prices against a more competitive market structure. That tension is the policy problem, made
+        tangible. <span style="color:var(--faint)">(This uses a standard quantum-Cournot model, derived and
+        checked for this page; treat the exact figures as illustrative of the mechanism, not forecasts.)</span></p>
+
+      <h2 class="sec"><span class="no">§ V</span>Reproduce every number</h2>
       <p>The console is an exact state-vector simulation. For a shot-based version on real quantum tooling, the
         Qiskit notebook builds the same circuit (Ĵ(γ), the Û(θ,φ) strategies, Aer sampling) and regenerates
         both charts, thresholds and all.</p>
@@ -518,7 +564,67 @@ document.querySelectorAll('.presets button').forEach(btn=>{btn.addEventListener(
 $('tick1').style.left=(G1/(PI/2)*100)+'%';
 $('tick2').style.left=(G2/(PI/2)*100)+'%';
 
-computeSweep();setSliders();render();
+/* =========================================================================
+   Figure 2: quantum Cournot duopoly (derived & verified for this page).
+   q_i = x_i cosh g + x_j sinh g ;  u1=q1(1-q1-q2), u2=q2((1+s)-q1-q2), k=1.
+   FOCs give a linear system; solve for x, then quantities. Firm 1 is driven
+   out (monopoly) when its equilibrium quantity q1 <= 0. Verified: threshold
+   sigma_c(0)=1 (classical) rising to 2 as g grows; total output falls with g.
+   ========================================================================= */
+function cournot(g,sigma){
+  const ch=Math.cosh(g),sh=Math.sinh(g),s=ch+sh;
+  const a11=s*2*ch,a12=s*s,a21=s*s,a22=s*2*ch,b1=ch,b2=ch*(1+sigma);
+  const det=a11*a22-a12*a21;
+  const x1=(b1*a22-a12*b2)/det, x2=(a11*b2-a21*b1)/det;
+  const q1=ch*x1+sh*x2, q2=ch*x2+sh*x1;
+  return {q1,q2,Q:q1+q2,price:1-(q1+q2)};
+}
+function sigmaThreshold(g){let lo=0,hi=3;for(let i=0;i<44;i++){const m=(lo+hi)/2;cournot(g,m).q1>0?lo=m:hi=m;}return(lo+hi)/2;}
+const cst={sig:0.8,g:0};
+const cph=$('cphase'),cpx=cph.getContext('2d'),PW=cph.width,PH=cph.height,PP=30,GMAX=2,SMAX=2;
+function drawPhase(){
+  cpx.clearRect(0,0,PW,PH);
+  const gw=PW-PP-8,gh=PH-PP-14,X=g=>PP+(g/GMAX)*gw,Y=s=>8+gh-(s/SMAX)*gh;
+  // shade by scanning columns (monopoly above threshold, duopoly below)
+  for(let px=0;px<gw;px++){
+    const g=(px/gw)*GMAX, sc=Math.min(SMAX,sigmaThreshold(g)), yc=Y(sc);
+    cpx.fillStyle='rgba(47,58,90,0)';
+    cpx.fillStyle='rgba(91,59,214,.09)';cpx.fillRect(PP+px,yc,1,8+gh-yc);      // duopoly (below curve)
+    cpx.fillStyle='rgba(176,57,42,.10)';cpx.fillRect(PP+px,8,1,yc-8);          // monopoly (above)
+  }
+  // threshold curve
+  cpx.strokeStyle='#1b1a15';cpx.lineWidth=2;cpx.beginPath();
+  for(let px=0;px<=gw;px++){const g=(px/gw)*GMAX,sc=Math.min(SMAX,sigmaThreshold(g));const x=PP+px,y=Y(sc);px?cpx.lineTo(x,y):cpx.moveTo(x,y);}
+  cpx.stroke();
+  // axes
+  cpx.fillStyle='#8a836f';cpx.font='9px "Courier New",monospace';
+  cpx.fillText('γ →',PP+gw-20,PH-4);cpx.fillText('0',PP-4,PH-4);
+  cpx.save();cpx.translate(11,8+gh);cpx.rotate(-PI/2);cpx.fillText('σ  (disadvantage) →',0,0);cpx.restore();
+  cpx.fillText('σ=1',PP-2,Y(1)-3);
+  cpx.strokeStyle='rgba(138,131,111,.5)';cpx.setLineDash([2,3]);cpx.beginPath();cpx.moveTo(PP,Y(1));cpx.lineTo(PP+gw,Y(1));cpx.stroke();cpx.setLineDash([]);
+  // current point
+  const x=X(Math.min(cst.g,GMAX)),y=Y(Math.min(cst.sig,SMAX));
+  cpx.fillStyle='#9c7611';cpx.beginPath();cpx.arc(x,y,5,0,2*PI);cpx.fill();
+  cpx.strokeStyle='#1b1a15';cpx.lineWidth=1.4;cpx.stroke();
+}
+function renderCournot(){
+  $('sigLab').textContent=cst.sig.toFixed(2);$('cgamLab').textContent=cst.g.toFixed(2);
+  const {q1,q2,Q,price}=cournot(cst.g,cst.sig), sc=sigmaThreshold(cst.g), monopoly=cst.sig>=sc;
+  const q1d=Math.max(0,q1);
+  const scaleMax=Math.max(q2,q1d,0.7);
+  $('q1bar').style.width=(q1d/scaleMax*100)+'%';$('q2bar').style.width=(Math.max(0,q2)/scaleMax*100)+'%';
+  $('q1p').textContent=monopoly?'out':q1.toFixed(3);$('q2p').textContent=q2.toFixed(3);
+  $('Qval').textContent=(monopoly?(0.5):Q).toFixed(3);
+  $('Pval').textContent=(monopoly?(0.5):price).toFixed(3);
+  const v=$('cVerdict');
+  if(monopoly){v.className='vd classic';v.innerHTML='<b>Monopoly.</b> Firm 1 is squeezed out; Firm 2 sets the price alone.';}
+  else{v.className='vd nash';v.innerHTML=`<b>Duopoly holds.</b> Both firms produce (survival needs σ &lt; ${sc.toFixed(2)} at this γ).`;}
+  drawPhase();
+}
+$('sig').addEventListener('input',e=>{cst.sig=parseFloat(e.target.value);renderCournot();});
+$('cgam').addEventListener('input',e=>{cst.g=parseFloat(e.target.value);renderCournot();});
+
+computeSweep();setSliders();render();renderCournot();
 </script>
 </body>
 </html>
