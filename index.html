@@ -162,7 +162,7 @@
     </div>
     <h1>The Prisoner's Dilemma,<br><em>Entangled</em></h1>
     <p class="dek">An interactive account of how sharing a pair of entangled qubits can
-      turn betrayal into cooperation — with not one but two exact tipping points.</p>
+      turn betrayal into cooperation, with not one but two exact tipping points.</p>
     <div class="rule2"><span></span>By Eleanor Adams<span></span></div>
   </div>
 
@@ -172,7 +172,7 @@
 
       <p class="drop">Game theory's most famous trap is the Prisoner's Dilemma. Two players each choose,
         in secret, to <b>cooperate</b> or <b>defect</b>. Whatever the other does, defecting always pays the
-        individual a little more — so two perfectly rational players both defect and walk away with
+        individual a little more, so two perfectly rational players both defect and walk away with
         <b>(1,&nbsp;1)</b>, even though cooperating would have paid <b>(3,&nbsp;3)</b>. Rationality itself
         produces the worse outcome.</p>
 
@@ -188,17 +188,17 @@
 
       <p>In 1999 Eisert, Wilkens &amp; Lewenstein asked a strange question: what if, before the players
         choose, we hand each of them one qubit of a shared <b>entangled</b> pair? Their moves are no longer
-        just "cooperate" or "defect" — they become <b>rotations of a qubit</b>, and the space of rotations is
+        just "cooperate" or "defect": they become <b>rotations of a qubit</b>, and the space of rotations is
         far larger than two options. The console below runs their exact protocol, live.</p>
 
       <aside class="note"><span class="h">Read me first</span>
-        Everything in the figure is a real 2-qubit state-vector calculation running in your browser — no
+        Everything in the figure is a real 2-qubit state-vector calculation running in your browser, with no
         sampling, no server. Move a slider and every number is recomputed exactly.</aside>
     </div>
 
     <!-- ============ THE CONSOLE (figure, full width) ============ -->
     <figure class="console">
-      <div class="fcap"><span>Figure 1 — <b>The entanglement console</b></span><span>drag anything</span></div>
+      <div class="fcap"><span>Figure 1: <b>The entanglement console</b></span><span>drag anything</span></div>
       <div class="cbody">
 
         <div class="players">
@@ -209,9 +209,9 @@
               <button data-s="D">D · defect</button>
               <button data-s="Q" class="on">Q · quantum</button>
             </div>
-            <div class="sld"><label><span>θ — cooperate ⟷ defect</span><b id="thALab">0.00</b></label>
+            <div class="sld"><label><span>θ: cooperate ⟷ defect</span><b id="thALab">0.00</b></label>
               <input type="range" id="thA" min="0" max="3.14159" step="0.0001" value="0"></div>
-            <div class="sld"><label><span>φ — quantum phase</span><b id="phALab">1.57</b></label>
+            <div class="sld"><label><span>φ: quantum phase</span><b id="phALab">1.57</b></label>
               <input type="range" id="phA" min="0" max="1.5708" step="0.0001" value="1.5708"></div>
           </div>
           <div class="pl bob">
@@ -221,15 +221,15 @@
               <button data-s="D">D · defect</button>
               <button data-s="Q" class="on">Q · quantum</button>
             </div>
-            <div class="sld"><label><span>θ — cooperate ⟷ defect</span><b id="thBLab">0.00</b></label>
+            <div class="sld"><label><span>θ: cooperate ⟷ defect</span><b id="thBLab">0.00</b></label>
               <input type="range" id="thB" min="0" max="3.14159" step="0.0001" value="0"></div>
-            <div class="sld"><label><span>φ — quantum phase</span><b id="phBLab">1.57</b></label>
+            <div class="sld"><label><span>φ: quantum phase</span><b id="phBLab">1.57</b></label>
               <input type="range" id="phB" min="0" max="1.5708" step="0.0001" value="1.5708"></div>
           </div>
         </div>
 
         <div class="gbox">
-          <div class="gtop"><h3>Entanglement&nbsp; γ</h3><span class="gval" id="gLab">—</span></div>
+          <div class="gtop"><h3>Entanglement&nbsp; γ</h3><span class="gval" id="gLab">…</span></div>
           <input type="range" id="gamma" min="0" max="1.5708" step="0.0001" value="1.5708">
           <div class="gticks">
             <span style="left:0;transform:none">0 · classical</span>
@@ -253,7 +253,7 @@
               <div class="pc a"><div class="w">Alice</div><div class="v" id="payA">3.00</div></div>
               <div class="pc b"><div class="w">Bob</div><div class="v" id="payB">3.00</div></div>
             </div>
-            <div class="vd" id="verdict">—</div>
+            <div class="vd" id="verdict">…</div>
           </div>
         </div>
 
@@ -278,8 +278,8 @@
       <p class="stand">What the console is actually doing, in three moves.</p>
       <ol class="proto">
         <li>Start both qubits in |CC⟩ and apply an <b>entangling gate Ĵ(γ)</b>. The dial γ sets how strongly
-          the two players' fates are correlated — from independent (γ = 0) to maximally entangled (γ = π/2).</li>
-        <li>Each player privately applies their <b>strategy Û(θ, φ)</b> — a rotation of their own qubit.
+          the two players' fates are correlated, from independent (γ = 0) to maximally entangled (γ = π/2).</li>
+        <li>Each player privately applies their <b>strategy Û(θ, φ)</b>, a rotation of their own qubit.
           θ slides between cooperate and defect; φ reaches into the purely quantum directions no classical
           coin can touch.</li>
         <li><b>Un-entangle</b> with Ĵ†, measure both qubits as C or D, and apply the payoff table.</li>
@@ -287,10 +287,10 @@
 
       <aside class="note"><span class="h">The strategies</span>
         <b>C</b> = Û(0,&nbsp;0), the identity. <b>D</b> = Û(π,&nbsp;0), a bit-flip. <b>Q</b> = Û(0,&nbsp;π/2),
-        a phase move with <i>no</i> classical analogue — the "miracle move."</aside>
+        a phase move with <i>no</i> classical analogue, the "miracle move."</aside>
 
       <p>At γ = 0 this reproduces the classical game exactly: defection dominates, and the console's verdict
-        reads <i>the classical trap</i>. But turn γ up and try <b>Q against a defector</b> — the quantum player
+        reads <i>the classical trap</i>. But turn γ up and try <b>Q against a defector</b>, and the quantum player
         escapes and takes the 5. That single fact is what makes mutual defection unstable.</p>
 
       <h2 class="sec"><span class="no">§ II</span>Two tipping points, not one</h2>
@@ -301,20 +301,20 @@
 
       <aside class="note"><span class="h">Why I trust these</span>
         Both thresholds were found by fine numerical search and land exactly on <b>sin²γ = 1/5</b> and
-        <b>2/5</b> — the values reported in the Eisert–Wilkens–Lewenstein literature. I verified them; I did
+        <b>2/5</b>, the values reported in the Eisert–Wilkens–Lewenstein literature. I verified them; I did
         not discover them.</aside>
 
-      <p>Below <b>γ₁ = arcsin√(1/5) ≈ 0.464</b>, mutual defection is still the Nash equilibrium — the dilemma
+      <p>Below <b>γ₁ = arcsin√(1/5) ≈ 0.464</b>, mutual defection is still the Nash equilibrium, and the dilemma
         survives. Above <b>γ₂ = arcsin√(2/5) ≈ 0.685</b>, mutual quantum cooperation <b>(Q, Q)</b> becomes the
         Nash equilibrium and pays (3, 3). And in the gap <b>between</b> them, something stranger happens:
         <b>no pure-strategy equilibrium exists at all.</b> The right-hand chart in Figure 1 draws all three
         regions; watch the gold marker cross from one into the next.</p>
 
-      <blockquote>Entanglement doesn't gently bend the incentives. It restructures them — and it does so at
+      <blockquote>Entanglement doesn't gently bend the incentives. It restructures them, and it does so at
         sharp, rational thresholds, with a frustrated no-man's-land in between.</blockquote>
 
       <h2 class="sec"><span class="no">§ III</span>Why a physicist's toy matters to economists</h2>
-      <p>The equilibria of strategic life — oligopoly pricing, arms control, who pollutes a shared river —
+      <p>The equilibria of strategic life (oligopoly pricing, arms control, who pollutes a shared river)
         are usually treated as fixed facts of the payoff matrix. Quantum game theory says otherwise: they also
         depend on the <b>correlation structure</b> the players are allowed to share. Change what can be shared,
         and you change what "rational" means. The <a href="papers/wang-quantum-game-theory.pdf">survey I built
@@ -324,7 +324,7 @@
 
       <h2 class="sec"><span class="no">§ IV</span>Reproduce every number</h2>
       <p>The console is an exact state-vector simulation. For a shot-based version on real quantum tooling, the
-        Qiskit notebook builds the same circuit — Ĵ(γ), the Û(θ,φ) strategies, Aer sampling — and regenerates
+        Qiskit notebook builds the same circuit (Ĵ(γ), the Û(θ,φ) strategies, Aer sampling) and regenerates
         both charts, thresholds and all.</p>
       <div class="kit">
         <a href="notebook/quantum_prisoners_dilemma.ipynb">▸ Qiskit notebook</a>
@@ -414,8 +414,8 @@ function render(){
   const brA=bestResponse(st.tB,st.pB,st.g), brB=bestResponse(st.tA,st.pA,st.g);
   const aStable=a>=brA-0.05, bStable=b>=brB-0.05, v=$('verdict');
   if(aStable&&bStable){v.className='vd nash';v.innerHTML='<b>Nash equilibrium.</b> Neither player gains by deviating.';}
-  else if(regionOf(st.g)==='classical'&&st.g<0.02){v.className='vd classic';v.innerHTML='<b>The classical trap.</b> Each is tempted to defect — this profile is exploitable.';}
-  else{const who=!aStable?'Alice':'Bob';v.className='vd frust';v.innerHTML=`<b>Not stable.</b> ${who} could gain by switching — no mutual best response here.`;}
+  else if(regionOf(st.g)==='classical'&&st.g<0.02){v.className='vd classic';v.innerHTML='<b>The classical trap.</b> Each is tempted to defect, so this profile is exploitable.';}
+  else{const who=!aStable?'Alice':'Bob';v.className='vd frust';v.innerHTML=`<b>Not stable.</b> ${who} could gain by switching; no mutual best response here.`;}
 
   drawHeat();drawCurve();paintPresets();
 }
