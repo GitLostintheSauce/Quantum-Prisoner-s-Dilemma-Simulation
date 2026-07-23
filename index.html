@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Quantum Prisoner's Dilemma · a broadsheet</title>
+<style>
+  :root{
+    --paper:#f0ebdf; --paper2:#e7e0cd; --card:#f6f2e8;
+    --ink:#1b1a15; --ink2:#46433a; --faint:#8a836f; --rule:#c8bda0;
+    --violet:#5b3bd6;   /* quantum / cooperate strategy Q */
+    --rust:#b0392a;     /* defect / classical */
+    --green:#2f7d4f;    /* CC outcome */
+    --gold:#9c7611;     /* thresholds */
+    --disp:"Hoefler Text","Baskerville","Big Caslon",Palatino,"Palatino Linotype",Georgia,serif;
+    --mono:"Courier New",ui-monospace,Menlo,monospace;
+    --sans:"Avenir Next","Gill Sans","Futura",Optima,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--disp);font-size:19px;line-height:1.62;
+    background-image:radial-gradient(circle at 12% 8%,rgba(91,59,214,.05),transparent 40%),
+      radial-gradient(circle at 90% 4%,rgba(176,57,42,.05),transparent 38%);}
+  ::selection{background:rgba(91,59,214,.18)}
+  a{color:var(--violet);text-underline-offset:2px}
+
+  .sheet{max-width:1020px;margin:0 auto;padding:0 26px}
+  .lab{font-family:var(--mono);text-transform:uppercase;letter-spacing:.16em;font-size:11px;color:var(--faint)}
+
+  /* ---------- masthead ---------- */
+  .masthead{padding:46px 0 20px;border-bottom:3px double var(--ink);text-align:center}
+  .masthead .over{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--ink2);border-bottom:1px solid var(--rule);
+    padding-bottom:10px;margin-bottom:20px;flex-wrap:wrap;gap:6px}
+  .masthead h1{font-size:clamp(2.5rem,7vw,5.2rem);line-height:.98;font-weight:700;letter-spacing:-.015em;margin:0}
+  .masthead h1 em{font-style:italic;color:var(--violet)}
+  .masthead .dek{font-style:italic;color:var(--ink2);max-width:620px;margin:18px auto 6px;font-size:1.16rem;line-height:1.5}
+  .masthead .rule2{display:flex;align-items:center;gap:14px;justify-content:center;margin-top:18px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+  .masthead .rule2 span{height:1px;background:var(--rule);flex:1;max-width:120px}
+
+  /* ---------- body / manuscript ---------- */
+  article{padding:44px 0 10px}
+  .col{max-width:660px}
+  .drop::first-letter{initial-letter:3;-webkit-initial-letter:3;font-weight:700;margin-right:12px;color:var(--rust);font-family:var(--disp)}
+  p{margin:0 0 20px}
+  .col p b{font-weight:700}
+  h2.sec{font-family:var(--disp);font-size:2rem;font-weight:700;letter-spacing:-.01em;margin:52px 0 4px;line-height:1.1}
+  h2.sec .no{font-family:var(--mono);font-size:.85rem;color:var(--rust);letter-spacing:.1em;display:block;margin-bottom:6px}
+  .stand{font-style:italic;color:var(--ink2);margin:0 0 26px;max-width:640px}
+
+  /* hanging marginalia */
+  aside.note{font-family:var(--sans);font-size:13px;line-height:1.5;color:var(--ink2);
+    border-top:2px solid var(--ink);padding-top:8px;margin:6px 0 22px}
+  aside.note b{color:var(--ink)}
+  aside.note .h{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--rust);display:block;margin-bottom:5px}
+  @media(min-width:1000px){
+    aside.note{float:right;clear:right;width:238px;margin-right:-286px;margin-top:0}
+  }
+
+  /* payoff matrix as a figure */
+  .paymatrix{border-collapse:collapse;font-family:var(--mono);font-size:15px;margin:8px 0 26px}
+  .paymatrix td,.paymatrix th{border:1px solid var(--ink);padding:11px 20px;text-align:center;background:var(--card)}
+  .paymatrix th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);font-weight:400;background:transparent;border:none}
+  .paymatrix .good{color:var(--green);font-weight:700}
+  .paymatrix .bad{color:var(--rust)}
+
+  /* ---------- the interactive FIGURE (breaks wider) ---------- */
+  figure.console{margin:40px 0;border:1px solid var(--ink);background:var(--card);
+    box-shadow:7px 7px 0 var(--paper2),7px 7px 0 1px var(--rule)}
+  .fcap{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2);
+    padding:11px 20px;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .fcap b{color:var(--rust)}
+  .cbody{padding:24px}
+
+  .players{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:720px){.players{grid-template-columns:1fr}}
+  .pl{border:1px solid var(--rule);background:var(--paper);padding:18px 20px}
+  .pl .top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--rule);padding-bottom:10px;margin-bottom:14px}
+  .pl .top h3{margin:0;font-size:1.4rem;font-style:italic}
+  .pl.alice .top h3{color:var(--rust)} .pl.bob .top h3{color:var(--violet)}
+  .presets{display:flex;gap:0;border:1px solid var(--ink);margin-bottom:16px}
+  .presets button{flex:1;font-family:var(--mono);font-size:12.5px;font-weight:700;padding:10px 0;
+    background:var(--paper);color:var(--ink2);border:none;border-right:1px solid var(--ink);cursor:pointer;transition:.12s}
+  .presets button:last-child{border-right:none}
+  .presets button:hover{background:var(--paper2)}
+  .presets button.on{background:var(--ink);color:var(--paper)}
+  .sld{margin:12px 0}
+  .sld label{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:var(--ink2);margin-bottom:5px}
+  .sld label b{color:var(--ink)}
+  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:3px;background:var(--rule);outline:none;cursor:pointer;margin:8px 0}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;background:var(--ink);border:2px solid var(--paper);border-radius:0;transform:rotate(45deg)}
+  input[type=range]::-moz-range-thumb{width:13px;height:13px;background:var(--ink);border:2px solid var(--paper);border-radius:0}
+
+  .gbox{margin-top:22px;border:1px solid var(--ink);background:var(--paper);padding:18px 20px}
+  .gbox .gtop{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;flex-wrap:wrap;gap:6px}
+  .gbox .gtop h3{margin:0;font-size:1.15rem;font-style:italic}
+  .gbox .gval{font-family:var(--mono);font-size:12.5px;color:var(--gold);font-weight:700}
+  .gticks{position:relative;height:15px;margin-top:6px;font-family:var(--mono);font-size:9.5px;color:var(--faint)}
+  .gticks span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+  .gticks .t1,.gticks .t2{color:var(--gold)}
+
+  .readout{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;margin-top:22px}
+  @media(max-width:720px){.readout{grid-template-columns:1fr}}
+  .probs .prow{margin-bottom:12px}
+  .probs .pl2{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;margin-bottom:4px}
+  .probs .pl2 .nm b{color:var(--ink)} .probs .pl2 .nm span{color:var(--faint)}
+  .probs .pl2 .pc{color:var(--ink2)}
+  .track{height:14px;border:1px solid var(--ink);background:var(--paper);position:relative}
+  .fill{height:100%;transition:width .25s ease}
+  .payff{display:flex;flex-direction:column}
+  .pcards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .pc{border:1px solid var(--ink);background:var(--paper);padding:14px 10px;text-align:center}
+  .pc .w{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+  .pc .v{font-size:2.4rem;font-weight:700;line-height:1;margin-top:6px;font-variant-numeric:tabular-nums}
+  .pc.a .v{color:var(--rust)} .pc.b .v{color:var(--violet)}
+  .vd{margin-top:14px;border:1px solid var(--ink);padding:12px 14px;font-size:.92rem;font-family:var(--sans);text-align:center;background:var(--paper)}
+  .vd.nash{border-color:var(--green);background:rgba(47,125,79,.08);color:var(--green)}
+  .vd.classic{border-color:var(--rust);background:rgba(176,57,42,.08);color:var(--rust)}
+  .vd.frust{border-color:var(--gold);background:rgba(156,118,17,.10);color:var(--gold)}
+  .vd b{font-weight:700}
+
+  /* charts */
+  .charts{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:24px}
+  @media(max-width:720px){.charts{grid-template-columns:1fr}}
+  .chart{border:1px solid var(--rule);background:var(--paper);padding:16px}
+  .chart h4{margin:0 0 12px;font-size:1rem;font-style:italic}
+  canvas{width:100%;height:auto;display:block}
+  .leg{font-family:var(--mono);font-size:10px;color:var(--ink2);margin-top:9px;display:flex;gap:14px;flex-wrap:wrap}
+  .leg i{display:inline-block;width:16px;height:3px;vertical-align:3px;margin-right:5px}
+
+  /* steps */
+  ol.proto{counter-reset:s;list-style:none;padding:0;margin:22px 0}
+  ol.proto li{counter-increment:s;position:relative;padding:0 0 16px 44px;margin:0}
+  ol.proto li::before{content:counter(s,upper-roman);position:absolute;left:0;top:-2px;font-family:var(--disp);
+    font-style:italic;font-size:1.5rem;color:var(--rust);width:32px;text-align:right}
+  ol.proto li b{font-weight:700}
+
+  blockquote{margin:32px 0;padding:4px 0 4px 26px;border-left:4px solid var(--violet);font-style:italic;font-size:1.28rem;line-height:1.45;color:var(--ink)}
+
+  .kit{display:flex;gap:0;flex-wrap:wrap;border:1px solid var(--ink);margin:14px 0 40px}
+  .kit a{flex:1 1 auto;text-align:center;font-family:var(--mono);font-size:12px;text-decoration:none;color:var(--ink);
+    padding:13px 16px;border-right:1px solid var(--ink);background:var(--card)}
+  .kit a:last-child{border-right:none}
+  .kit a:hover{background:var(--ink);color:var(--paper)}
+
+  footer{border-top:3px double var(--ink);margin-top:20px;padding:22px 0 60px;font-family:var(--mono);
+    font-size:11px;letter-spacing:.06em;color:var(--faint);text-align:center;line-height:1.7}
+  footer a{color:var(--ink2)}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <!-- ================= MASTHEAD ================= -->
+  <div class="masthead">
+    <div class="over">
+      <span>Vol. I · No. 1</span>
+      <span>Quantum Game Theory · Broadsheet</span>
+      <span>Two qubits · one dilemma</span>
+    </div>
+    <h1>The Prisoner's Dilemma,<br><em>Entangled</em></h1>
+    <p class="dek">An interactive account of how sharing a pair of entangled qubits can
+      turn betrayal into cooperation — with not one but two exact tipping points.</p>
+    <div class="rule2"><span></span>By Eleanor Adams<span></span></div>
+  </div>
+
+  <!-- ================= ARTICLE ================= -->
+  <article>
+    <div class="col">
+
+      <p class="drop">Game theory's most famous trap is the Prisoner's Dilemma. Two players each choose,
+        in secret, to <b>cooperate</b> or <b>defect</b>. Whatever the other does, defecting always pays the
+        individual a little more — so two perfectly rational players both defect and walk away with
+        <b>(1,&nbsp;1)</b>, even though cooperating would have paid <b>(3,&nbsp;3)</b>. Rationality itself
+        produces the worse outcome.</p>
+
+      <aside class="note"><span class="h">The payoff key</span>
+        Reward for mutual cooperation <b>3</b>; punishment for mutual defection <b>1</b>; the tempting
+        <b>5</b> for defecting on a cooperator, who is left the sucker's <b>0</b>.</aside>
+
+      <table class="paymatrix">
+        <tr><th></th><th>Bob: Cooperate</th><th>Bob: Defect</th></tr>
+        <tr><th>Alice: Cooperate</th><td class="good">3,&nbsp;3</td><td class="bad">0,&nbsp;5</td></tr>
+        <tr><th>Alice: Defect</th><td class="bad">5,&nbsp;0</td><td>1,&nbsp;1</td></tr>
+      </table>
+
+      <p>In 1999 Eisert, Wilkens &amp; Lewenstein asked a strange question: what if, before the players
+        choose, we hand each of them one qubit of a shared <b>entangled</b> pair? Their moves are no longer
+        just "cooperate" or "defect" — they become <b>rotations of a qubit</b>, and the space of rotations is
+        far larger than two options. The console below runs their exact protocol, live.</p>
+
+      <aside class="note"><span class="h">Read me first</span>
+        Everything in the figure is a real 2-qubit state-vector calculation running in your browser — no
+        sampling, no server. Move a slider and every number is recomputed exactly.</aside>
+    </div>
+
+    <!-- ============ THE CONSOLE (figure, full width) ============ -->
+    <figure class="console">
+      <div class="fcap"><span>Figure 1 — <b>The entanglement console</b></span><span>drag anything</span></div>
+      <div class="cbody">
+
+        <div class="players">
+          <div class="pl alice">
+            <div class="top"><h3>Alice</h3><span class="lab">Player A · qubit 0</span></div>
+            <div class="presets" data-player="A">
+              <button data-s="C">C · cooperate</button>
+              <button data-s="D">D · defect</button>
+              <button data-s="Q" class="on">Q · quantum</button>
+            </div>
+            <div class="sld"><label><span>θ — cooperate ⟷ defect</span><b id="thALab">0.00</b></label>
+              <input type="range" id="thA" min="0" max="3.14159" step="0.0001" value="0"></div>
+            <div class="sld"><label><span>φ — quantum phase</span><b id="phALab">1.57</b></label>
+              <input type="range" id="phA" min="0" max="1.5708" step="0.0001" value="1.5708"></div>
+          </div>
+          <div class="pl bob">
+            <div class="top"><h3>Bob</h3><span class="lab">Player B · qubit 1</span></div>
+            <div class="presets" data-player="B">
+              <button data-s="C">C · cooperate</button>
+              <button data-s="D">D · defect</button>
+              <button data-s="Q" class="on">Q · quantum</button>
+            </div>
+            <div class="sld"><label><span>θ — cooperate ⟷ defect</span><b id="thBLab">0.00</b></label>
+              <input type="range" id="thB" min="0" max="3.14159" step="0.0001" value="0"></div>
+            <div class="sld"><label><span>φ — quantum phase</span><b id="phBLab">1.57</b></label>
+              <input type="range" id="phB" min="0" max="1.5708" step="0.0001" value="1.5708"></div>
+          </div>
+        </div>
+
+        <div class="gbox">
+          <div class="gtop"><h3>Entanglement&nbsp; γ</h3><span class="gval" id="gLab">—</span></div>
+          <input type="range" id="gamma" min="0" max="1.5708" step="0.0001" value="1.5708">
+          <div class="gticks">
+            <span style="left:0;transform:none">0 · classical</span>
+            <span class="t1" id="tick1">γ₁</span>
+            <span class="t2" id="tick2">γ₂</span>
+            <span style="left:100%;transform:translateX(-100%)">π/2 · max</span>
+          </div>
+        </div>
+
+        <div class="readout">
+          <div class="probs">
+            <div class="lab" style="margin-bottom:12px">Measurement outcome</div>
+            <div class="prow"><div class="pl2"><span class="nm"><b>CC</b> <span>both cooperate</span></span><span class="pc" id="p00p">100%</span></div><div class="track"><div class="fill" id="p00" style="background:var(--green)"></div></div></div>
+            <div class="prow"><div class="pl2"><span class="nm"><b>CD</b> <span>Alice suckered</span></span><span class="pc" id="p01p">0%</span></div><div class="track"><div class="fill" id="p01" style="background:var(--gold)"></div></div></div>
+            <div class="prow"><div class="pl2"><span class="nm"><b>DC</b> <span>Bob suckered</span></span><span class="pc" id="p10p">0%</span></div><div class="track"><div class="fill" id="p10" style="background:var(--gold)"></div></div></div>
+            <div class="prow"><div class="pl2"><span class="nm"><b>DD</b> <span>both defect</span></span><span class="pc" id="p11p">0%</span></div><div class="track"><div class="fill" id="p11" style="background:var(--rust)"></div></div></div>
+          </div>
+          <div class="payff">
+            <div class="lab" style="margin-bottom:12px">Expected payoff</div>
+            <div class="pcards">
+              <div class="pc a"><div class="w">Alice</div><div class="v" id="payA">3.00</div></div>
+              <div class="pc b"><div class="w">Bob</div><div class="v" id="payB">3.00</div></div>
+            </div>
+            <div class="vd" id="verdict">—</div>
+          </div>
+        </div>
+
+        <div class="charts">
+          <div class="chart">
+            <h4>Alice's payoff landscape (Bob plays Q)</h4>
+            <canvas id="heat" width="430" height="300"></canvas>
+            <div class="leg"><span><i style="background:var(--rust)"></i>0</span><span><i style="background:var(--gold)"></i>mid</span><span><i style="background:var(--green)"></i>5</span><span>✕ best response · ◇ Q</span></div>
+          </div>
+          <div class="chart">
+            <h4>The two tipping points</h4>
+            <canvas id="curve" width="430" height="300"></canvas>
+            <div class="leg"><span><i style="background:var(--violet)"></i>exploit vs Q</span><span><i style="background:var(--rust)"></i>exploit vs D</span><span><i style="background:var(--gold)"></i>current γ</span></div>
+          </div>
+        </div>
+
+      </div>
+    </figure>
+
+    <div class="col">
+      <h2 class="sec"><span class="no">§ I</span>The protocol</h2>
+      <p class="stand">What the console is actually doing, in three moves.</p>
+      <ol class="proto">
+        <li>Start both qubits in |CC⟩ and apply an <b>entangling gate Ĵ(γ)</b>. The dial γ sets how strongly
+          the two players' fates are correlated — from independent (γ = 0) to maximally entangled (γ = π/2).</li>
+        <li>Each player privately applies their <b>strategy Û(θ, φ)</b> — a rotation of their own qubit.
+          θ slides between cooperate and defect; φ reaches into the purely quantum directions no classical
+          coin can touch.</li>
+        <li><b>Un-entangle</b> with Ĵ†, measure both qubits as C or D, and apply the payoff table.</li>
+      </ol>
+
+      <aside class="note"><span class="h">The strategies</span>
+        <b>C</b> = Û(0,&nbsp;0), the identity. <b>D</b> = Û(π,&nbsp;0), a bit-flip. <b>Q</b> = Û(0,&nbsp;π/2),
+        a phase move with <i>no</i> classical analogue — the "miracle move."</aside>
+
+      <p>At γ = 0 this reproduces the classical game exactly: defection dominates, and the console's verdict
+        reads <i>the classical trap</i>. But turn γ up and try <b>Q against a defector</b> — the quantum player
+        escapes and takes the 5. That single fact is what makes mutual defection unstable.</p>
+
+      <h2 class="sec"><span class="no">§ II</span>Two tipping points, not one</h2>
+      <p class="stand">The honest version of a result I first got wrong.</p>
+
+      <p>It would be tidy if cooperation switched on at a single magic value of entanglement. It doesn't. As you
+        raise γ, the game passes through <b>two</b> exact thresholds, and both are clean closed forms:</p>
+
+      <aside class="note"><span class="h">Why I trust these</span>
+        Both thresholds were found by fine numerical search and land exactly on <b>sin²γ = 1/5</b> and
+        <b>2/5</b> — the values reported in the Eisert–Wilkens–Lewenstein literature. I verified them; I did
+        not discover them.</aside>
+
+      <p>Below <b>γ₁ = arcsin√(1/5) ≈ 0.464</b>, mutual defection is still the Nash equilibrium — the dilemma
+        survives. Above <b>γ₂ = arcsin√(2/5) ≈ 0.685</b>, mutual quantum cooperation <b>(Q, Q)</b> becomes the
+        Nash equilibrium and pays (3, 3). And in the gap <b>between</b> them, something stranger happens:
+        <b>no pure-strategy equilibrium exists at all.</b> The right-hand chart in Figure 1 draws all three
+        regions; watch the gold marker cross from one into the next.</p>
+
+      <blockquote>Entanglement doesn't gently bend the incentives. It restructures them — and it does so at
+        sharp, rational thresholds, with a frustrated no-man's-land in between.</blockquote>
+
+      <h2 class="sec"><span class="no">§ III</span>Why a physicist's toy matters to economists</h2>
+      <p>The equilibria of strategic life — oligopoly pricing, arms control, who pollutes a shared river —
+        are usually treated as fixed facts of the payoff matrix. Quantum game theory says otherwise: they also
+        depend on the <b>correlation structure</b> the players are allowed to share. Change what can be shared,
+        and you change what "rational" means. The <a href="papers/wang-quantum-game-theory.pdf">survey I built
+        on</a> carries exactly this machinery to Cournot's duopoly, where a regulator tuning entanglement can
+        keep a second firm alive and head off a monopoly. That is the thread my
+        <a href="papers/adams-quantum-algorithms-economics.pdf">paper</a> pulls on.</p>
+
+      <h2 class="sec"><span class="no">§ IV</span>Reproduce every number</h2>
+      <p>The console is an exact state-vector simulation. For a shot-based version on real quantum tooling, the
+        Qiskit notebook builds the same circuit — Ĵ(γ), the Û(θ,φ) strategies, Aer sampling — and regenerates
+        both charts, thresholds and all.</p>
+      <div class="kit">
+        <a href="notebook/quantum_prisoners_dilemma.ipynb">▸ Qiskit notebook</a>
+        <a href="papers/adams-quantum-algorithms-economics.pdf">▸ my paper</a>
+        <a href="papers/wang-quantum-game-theory.pdf">▸ Wang (2022)</a>
+        <a href="https://github.com/GitLostintheSauce/Quantum-Prisoner-s-Dilemma-Simulation">▸ GitHub</a>
+      </div>
+    </div>
+  </article>
+
+  <footer>
+    Exact Eisert–Wilkens–Lewenstein simulation · Ĵ(γ)=exp(i·γ/2·σ_y⊗σ_y) · payoffs (3,0,5,1)<br>
+    thresholds sin²γ = 1/5 and 2/5 · Eleanor Adams ·
+    <a href="https://github.com/GitLostintheSauce/Quantum-Prisoner-s-Dilemma-Simulation">GitLostintheSauce</a>
+  </footer>
+
+</div>
+
+<script>
+/* =========================================================================
+   Exact EWL quantum Prisoner's Dilemma (2-qubit state vector).
+   Verified vs NumPy: CC,QQ->(3,3); DD->(1,1); Q-vs-D->(5,0).
+   Thresholds: gamma_1=asin(sqrt(1/5)) [DD ceases to be NE],
+               gamma_2=asin(sqrt(2/5)) [QQ becomes NE].
+   ========================================================================= */
+const PI=Math.PI;
+const G1=Math.asin(Math.sqrt(1/5));   // 0.4636
+const G2=Math.asin(Math.sqrt(2/5));   // 0.6847
+const cx=(re,im=0)=>({re,im});
+const cadd=(a,b)=>({re:a.re+b.re,im:a.im+b.im});
+const cmul=(a,b)=>({re:a.re*b.re-a.im*b.im,im:a.re*b.im+a.im*b.re});
+const cconj=a=>({re:a.re,im:-a.im});
+function Umat(t,p){
+  const eip=cx(Math.cos(p),Math.sin(p)),ein=cx(Math.cos(p),-Math.sin(p)),ct=Math.cos(t/2),st=Math.sin(t/2);
+  return [[cmul(eip,cx(ct)),cx(st)],[cx(-st),cmul(ein,cx(ct))]];
+}
+function kron(A,B){const M=Array.from({length:4},()=>Array(4).fill(cx(0)));
+  for(let i=0;i<2;i++)for(let j=0;j<2;j++)for(let k=0;k<2;k++)for(let l=0;l<2;l++)M[i*2+k][j*2+l]=cmul(A[i][j],B[k][l]);return M;}
+const YY=[[0,0,0,-1],[0,0,1,0],[0,1,0,0],[-1,0,0,0]];
+function Jmat(g){const c=Math.cos(g/2),s=Math.sin(g/2),M=Array.from({length:4},()=>Array(4).fill(cx(0)));
+  for(let i=0;i<4;i++)for(let j=0;j<4;j++)M[i][j]=cx(c*(i===j?1:0),s*YY[i][j]);return M;}
+function matvec(M,v){const r=Array(4).fill(cx(0));for(let i=0;i<4;i++){let s=cx(0);for(let j=0;j<4;j++)s=cadd(s,cmul(M[i][j],v[j]));r[i]=s;}return r;}
+function dagger(M){const T=Array.from({length:4},()=>Array(4).fill(cx(0)));for(let i=0;i<4;i++)for(let j=0;j<4;j++)T[i][j]=cconj(M[j][i]);return T;}
+const PA=[3,0,5,1],PB=[3,5,0,1];
+function simulate(tA,pA,tB,pB,g){
+  const J=Jmat(g),Jd=dagger(J),UAB=kron(Umat(tA,pA),Umat(tB,pB));
+  let psi=[cx(1),cx(0),cx(0),cx(0)];
+  psi=matvec(J,psi);psi=matvec(UAB,psi);psi=matvec(Jd,psi);
+  const p=psi.map(z=>z.re*z.re+z.im*z.im);
+  return {p,a:p.reduce((s,pi,i)=>s+PA[i]*pi,0),b:p.reduce((s,pi,i)=>s+PB[i]*pi,0)};
+}
+// best payoff a player can get vs a FIXED opponent strategy (fine enough for honest verdicts)
+function bestResponse(tO,pO,g,NT=64,NP=48){
+  let best=-1;
+  for(let i=0;i<NT;i++)for(let j=0;j<NP;j++){
+    const a=simulate(PI*i/(NT-1),(PI/2)*j/(NP-1),tO,pO,g).a;
+    if(a>best)best=a;
+  }
+  return best;
+}
+
+const PRE={C:[0,0],D:[PI,0],Q:[0,PI/2]};
+const st={tA:0,pA:PI/2,tB:0,pB:PI/2,g:PI/2};
+const $=id=>document.getElementById(id);
+function setSliders(){$('thA').value=st.tA;$('phA').value=st.pA;$('thB').value=st.tB;$('phB').value=st.pB;$('gamma').value=st.g;}
+function matchPreset(t,p){for(const[k,[pt,pp]]of Object.entries(PRE))if(Math.abs(t-pt)<1e-3&&Math.abs(p-pp)<1e-3)return k;return null;}
+function paintPresets(){document.querySelectorAll('.presets').forEach(row=>{
+  const pl=row.dataset.player,k=matchPreset(pl==='A'?st.tA:st.tB,pl==='A'?st.pA:st.pB);
+  row.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.s===k));});}
+
+function regionOf(g){return g<G1?'classical':(g>G2?'quantum':'frustrated');}
+function fmtG(g){
+  const r=regionOf(g);
+  const nm=r==='classical'?'classical zone':(r==='quantum'?'quantum zone':'frustrated zone');
+  return `γ = ${g.toFixed(3)}  ·  ${nm}`;
+}
+function render(){
+  $('thALab').textContent=st.tA.toFixed(2);$('phALab').textContent=st.pA.toFixed(2);
+  $('thBLab').textContent=st.tB.toFixed(2);$('phBLab').textContent=st.pB.toFixed(2);
+  $('gLab').textContent=fmtG(st.g);
+
+  const {p,a,b}=simulate(st.tA,st.pA,st.tB,st.pB,st.g);
+  ['p00','p01','p10','p11'].forEach((id,i)=>{$(id).style.width=(p[i]*100).toFixed(1)+'%';$(id+'p').textContent=Math.round(p[i]*100)+'%';});
+  $('payA').textContent=a.toFixed(2);$('payB').textContent=b.toFixed(2);
+
+  // honest verdict: is the current profile a mutual best response?
+  const brA=bestResponse(st.tB,st.pB,st.g), brB=bestResponse(st.tA,st.pA,st.g);
+  const aStable=a>=brA-0.05, bStable=b>=brB-0.05, v=$('verdict');
+  if(aStable&&bStable){v.className='vd nash';v.innerHTML='<b>Nash equilibrium.</b> Neither player gains by deviating.';}
+  else if(regionOf(st.g)==='classical'&&st.g<0.02){v.className='vd classic';v.innerHTML='<b>The classical trap.</b> Each is tempted to defect — this profile is exploitable.';}
+  else{const who=!aStable?'Alice':'Bob';v.className='vd frust';v.innerHTML=`<b>Not stable.</b> ${who} could gain by switching — no mutual best response here.`;}
+
+  drawHeat();drawCurve();paintPresets();
+}
+
+/* ---------- heatmap ---------- */
+const heat=$('heat'),hx=heat.getContext('2d'),HW=heat.width,HH=heat.height,HP=32;
+function payColor(v){const t=Math.max(0,Math.min(1,v/5));let r,g,b;
+  if(t<.5){const u=t/.5;r=176;g=Math.round(57+(156-57)*u);b=Math.round(42+(17-42)*u);}      // rust->gold
+  else{const u=(t-.5)/.5;r=Math.round(176-(176-47)*u);g=Math.round(156-(156-125)*u);b=Math.round(17+(79-17)*u);} // gold->green
+  return `rgb(${r},${g},${b})`;}
+function drawHeat(){
+  hx.clearRect(0,0,HW,HH);
+  const gw=HW-HP-8,gh=HH-HP-20,NT=42,NP=32,cw=gw/NT,ch=gh/NP;let best=-1,bt=0,bp=0;
+  for(let i=0;i<NT;i++)for(let j=0;j<NP;j++){
+    const t=PI*i/(NT-1),ph=(PI/2)*j/(NP-1),a=simulate(t,ph,0,PI/2,st.g).a;
+    if(a>best){best=a;bt=t;bp=ph;}
+    hx.fillStyle=payColor(a);hx.fillRect(HP+i*cw,8+(NP-1-j)*ch,cw+.6,ch+.6);
+  }
+  hx.fillStyle='#8a836f';hx.font='9px "Courier New",monospace';
+  hx.fillText('θ  C → D',HP,HH-6);
+  hx.save();hx.translate(11,8+gh);hx.rotate(-PI/2);hx.fillText('φ  quantum phase',0,0);hx.restore();
+  const px=t=>HP+(t/PI)*gw,py=ph=>8+gh-(ph/(PI/2))*gh;
+  hx.strokeStyle='#1b1a15';hx.lineWidth=1.4;const qx=px(0),qy=py(PI/2);
+  hx.beginPath();hx.moveTo(qx,qy-6);hx.lineTo(qx+6,qy);hx.lineTo(qx,qy+6);hx.lineTo(qx-6,qy);hx.closePath();hx.stroke();
+  hx.strokeStyle='#fff';hx.lineWidth=2.6;const bx=px(bt),by=py(bp);
+  hx.beginPath();hx.moveTo(bx-6,by-6);hx.lineTo(bx+6,by+6);hx.moveTo(bx+6,by-6);hx.lineTo(bx-6,by+6);hx.stroke();
+}
+
+/* ---------- gamma sweep ---------- */
+const cv=$('curve'),cxt=cv.getContext('2d'),CW=cv.width,CH=cv.height,CP=30;
+let SWEEP=null;
+function computeSweep(){const N=56,xs=[],eq=[],ed=[];
+  for(let k=0;k<N;k++){const g=(PI/2)*k/(N-1);xs.push(g);
+    eq.push(bestResponse(0,PI/2,g,52,40));  // exploit vs Q
+    ed.push(bestResponse(PI,0,g,52,40));    // exploit vs D
+  }SWEEP={xs,eq,ed,N};}
+function drawCurve(){
+  if(!SWEEP)return;cxt.clearRect(0,0,CW,CH);
+  const gw=CW-CP-10,gh=CH-CP-14,X=g=>CP+(g/(PI/2))*gw,Y=v=>8+gh-(v/5)*gh;
+  // region shading
+  cxt.fillStyle='rgba(176,57,42,.07)';cxt.fillRect(X(0),8,X(G1)-X(0),gh);
+  cxt.fillStyle='rgba(156,118,17,.10)';cxt.fillRect(X(G1),8,X(G2)-X(G1),gh);
+  cxt.fillStyle='rgba(47,125,79,.08)';cxt.fillRect(X(G2),8,X(PI/2)-X(G2),gh);
+  // grid
+  cxt.strokeStyle='rgba(200,189,160,.7)';cxt.lineWidth=1;cxt.fillStyle='#8a836f';cxt.font='9px "Courier New",monospace';
+  for(let v=0;v<=5;v++){const y=Y(v);cxt.beginPath();cxt.moveTo(CP,y);cxt.lineTo(CP+gw,y);cxt.stroke();cxt.fillText(v,CP-13,y+3);}
+  // threshold lines
+  [[G1,'γ₁'],[G2,'γ₂']].forEach(([g,l])=>{cxt.strokeStyle='rgba(156,118,17,.6)';cxt.setLineDash([3,3]);
+    cxt.beginPath();cxt.moveTo(X(g),8);cxt.lineTo(X(g),8+gh);cxt.stroke();cxt.setLineDash([]);
+    cxt.fillStyle='#9c7611';cxt.fillText(l,X(g)-6,CH-3);});
+  cxt.fillStyle='#8a836f';cxt.fillText('0',CP-4,CH-3);cxt.fillText('π/2',CP+gw-14,CH-3);
+  // curves
+  const plot=(arr,color)=>{cxt.strokeStyle=color;cxt.lineWidth=2.2;cxt.beginPath();
+    SWEEP.xs.forEach((g,i)=>{const x=X(g),y=Y(arr[i]);i?cxt.lineTo(x,y):cxt.moveTo(x,y);});cxt.stroke();};
+  plot(SWEEP.ed,'#b0392a');plot(SWEEP.eq,'#5b3bd6');
+  // reference line at payoff 3
+  cxt.strokeStyle='rgba(27,26,21,.25)';cxt.setLineDash([2,3]);cxt.beginPath();cxt.moveTo(CP,Y(3));cxt.lineTo(CP+gw,Y(3));cxt.stroke();cxt.setLineDash([]);
+  // current gamma marker
+  const x=X(st.g);cxt.strokeStyle='#9c7611';cxt.lineWidth=1.6;cxt.beginPath();cxt.moveTo(x,8);cxt.lineTo(x,8+gh);cxt.stroke();
+  cxt.fillStyle='#9c7611';cxt.beginPath();cxt.arc(x,8,3.2,0,2*PI);cxt.fill();
+}
+
+/* ---------- wiring ---------- */
+[['thA','tA'],['phA','pA'],['thB','tB'],['phB','pB'],['gamma','g']].forEach(([id,key])=>{
+  $(id).addEventListener('input',e=>{st[key]=parseFloat(e.target.value);render();});});
+document.querySelectorAll('.presets button').forEach(btn=>{btn.addEventListener('click',()=>{
+  const pl=btn.closest('.presets').dataset.player,[t,p]=PRE[btn.dataset.s];
+  if(pl==='A'){st.tA=t;st.pA=p;}else{st.tB=t;st.pB=p;}setSliders();render();});});
+
+// position gamma ticks for the two thresholds
+$('tick1').style.left=(G1/(PI/2)*100)+'%';
+$('tick2').style.left=(G2/(PI/2)*100)+'%';
+
+computeSweep();setSliders();render();
+</script>
+</body>
+</html>
