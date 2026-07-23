@@ -1,6 +1,6 @@
 # Quantum Prisoner's Dilemma: an interactive simulator
 
-**How does entanglement dissolve game theory's most famous trap?**
+**How does entanglement dissolve game theory's most famous trap, and what could that mean for economics?**
 
 An exact, interactive simulation of the **Eisert–Wilkens–Lewenstein (EWL)** quantum Prisoner's Dilemma.
 Turn the entanglement dial and watch the only rational move flip from *betray* to *cooperate*, passing
@@ -25,8 +25,11 @@ Built as the companion to my paper, *“How can quantum algorithms provide insig
 
 ## The idea in one minute
 
-In the classical Prisoner's Dilemma, whatever the other player does, defecting pays more, so two rational
-players both defect and land on **(1, 1)**, even though mutual cooperation pays **(3, 3)**.
+The Prisoner's Dilemma is the hidden skeleton of a hundred economic standoffs: two firms deciding whether to
+hold prices or undercut, two nations whether to curb emissions or free-ride, rivals whether to honor a cartel
+or cheat. Whatever the other player does, defecting pays more, so two rational players both defect and land on
+**(1, 1)**, even though mutual cooperation pays **(3, 3)**. Rationality itself produces the collectively worse
+outcome, which is exactly why price wars start and shared resources get overused.
 
 |                    | Bob: Cooperate | Bob: Defect |
 |--------------------|:--------------:|:-----------:|
@@ -55,12 +58,24 @@ Between them is a **frustrated region with no pure-strategy equilibrium**. These
 boundaries are the standard EWL thresholds, verified here numerically, not original to this project. The
 γ-sweep in the simulator (and §5 of the notebook) draws all three regions.
 
-## Why it's more than a physics curiosity
+## What this means for economics
 
-The equilibria of strategic interactions (oligopoly pricing, public-goods problems, international agreements)
-aren't fixed. They depend on the correlation structure the players can share. Change what the players are
-allowed to share, and you change what "rational" means. Wang (2022) carries the same machinery to Cournot
-duopoly, where a regulator tuning entanglement can keep a second firm in the market and prevent a monopoly.
+Economists usually treat a game's equilibrium as a fixed fact of its payoff matrix: the cartel will break, the
+commons will be overgrazed, the rivals will race to the bottom. Quantum game theory makes a sharper claim: the
+equilibrium also depends on the **correlation structure** the players can share before they act. Entanglement
+is not communication and changes no payoff, yet past γ₂ it makes cooperation rational, and with it raises the
+welfare the market lands on.
+
+Wang (2022) carries this to **Cournot's duopoly**, the textbook model of two firms choosing quantities. There
+entanglement becomes a policy lever: so long as the market is not too lopsided, a regulator tuning γ can stop a
+stronger firm from squeezing out a weaker one, **heading off a monopoly** while pushing production up and prices
+down. The dilemma's quantum escape hatch turns into an antitrust instrument.
+
+This is the question my [paper](papers/adams-quantum-algorithms-economics.pdf) asks: *where can quantum
+algorithms reach economic outcomes, and better outcomes, that classical models cannot?* Escaping this dilemma,
+more collective welfare from the same players and payoffs, is the cleanest example. It is an honest frontier,
+though: critics argue it may restate known economics rather than deliver new results, and the hardware to run
+it at scale does not yet exist.
 
 ## The physics, precisely
 

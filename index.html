@@ -158,11 +158,12 @@
     <div class="over">
       <span>Vol. I · No. 1</span>
       <span>Quantum Game Theory · Broadsheet</span>
-      <span>Two qubits · one dilemma</span>
+      <span>Where physics meets economics</span>
     </div>
     <h1>The Prisoner's Dilemma,<br><em>Entangled</em></h1>
     <p class="dek">An interactive account of how sharing a pair of entangled qubits can
-      turn betrayal into cooperation, with not one but two exact tipping points.</p>
+      turn betrayal into cooperation, and what that could mean for the cartels, price wars, and
+      standoffs that economists model with this very game.</p>
     <div class="rule2"><span></span>By Eleanor Adams<span></span></div>
   </div>
 
@@ -170,11 +171,14 @@
   <article>
     <div class="col">
 
-      <p class="drop">Game theory's most famous trap is the Prisoner's Dilemma. Two players each choose,
-        in secret, to <b>cooperate</b> or <b>defect</b>. Whatever the other does, defecting always pays the
-        individual a little more, so two perfectly rational players both defect and walk away with
+      <p class="drop">Game theory's most famous trap is the Prisoner's Dilemma, and it is the hidden skeleton
+        of a hundred economic standoffs: two firms deciding whether to hold prices or undercut, two nations
+        whether to curb emissions or free-ride, rivals whether to honor a cartel or cheat. Two players each
+        choose, in secret, to <b>cooperate</b> or <b>defect</b>. Whatever the other does, defecting always pays
+        the individual a little more, so two perfectly rational players both defect and walk away with
         <b>(1,&nbsp;1)</b>, even though cooperating would have paid <b>(3,&nbsp;3)</b>. Rationality itself
-        produces the worse outcome.</p>
+        produces the collectively worse outcome, which is exactly why price wars start and shared resources
+        get overused.</p>
 
       <aside class="note"><span class="h">The payoff key</span>
         Reward for mutual cooperation <b>3</b>; punishment for mutual defection <b>1</b>; the tempting
@@ -185,6 +189,11 @@
         <tr><th>Alice: Cooperate</th><td class="good">3,&nbsp;3</td><td class="bad">0,&nbsp;5</td></tr>
         <tr><th>Alice: Defect</th><td class="bad">5,&nbsp;0</td><td>1,&nbsp;1</td></tr>
       </table>
+
+      <aside class="note"><span class="h">The same matrix, as a market</span>
+        Read <b>cooperate</b> as "hold the high price" and <b>defect</b> as "undercut your rival." Both hold and
+        both profit (3, 3); both undercut and a price war leaves them (1, 1); undercut a loyal rival and you
+        take the market (5, 0). This is the arithmetic of cartels, oligopoly, and the tragedy of the commons.</aside>
 
       <p>In 1999 Eisert, Wilkens &amp; Lewenstein asked a strange question: what if, before the players
         choose, we hand each of them one qubit of a shared <b>entangled</b> pair? Their moves are no longer
@@ -313,14 +322,34 @@
       <blockquote>Entanglement doesn't gently bend the incentives. It restructures them, and it does so at
         sharp, rational thresholds, with a frustrated no-man's-land in between.</blockquote>
 
-      <h2 class="sec"><span class="no">§ III</span>Why a physicist's toy matters to economists</h2>
-      <p>The equilibria of strategic life (oligopoly pricing, arms control, who pollutes a shared river)
-        are usually treated as fixed facts of the payoff matrix. Quantum game theory says otherwise: they also
-        depend on the <b>correlation structure</b> the players are allowed to share. Change what can be shared,
-        and you change what "rational" means. The <a href="papers/wang-quantum-game-theory.pdf">survey I built
-        on</a> carries exactly this machinery to Cournot's duopoly, where a regulator tuning entanglement can
-        keep a second firm alive and head off a monopoly. That is the thread my
-        <a href="papers/adams-quantum-algorithms-economics.pdf">paper</a> pulls on.</p>
+      <h2 class="sec"><span class="no">§ III</span>What this means for economics</h2>
+      <p class="stand">The reason a physics experiment belongs in an economics paper.</p>
+
+      <p>Economists usually treat a game's equilibrium as a fixed fact of its payoff matrix: the cartel will
+        break, the commons will be overgrazed, the rivals will race to the bottom. Quantum game theory makes a
+        sharper claim. The equilibrium also depends on the <b>correlation structure</b> the players can share
+        before they act. Entanglement is not communication and it changes not a single payoff, yet past γ₂ it
+        makes cooperation the rational choice. Change what the players can share, and you change what "rational"
+        means, and with it the welfare the market lands on.</p>
+
+      <aside class="note"><span class="h">A regulator's dial</span>
+        In Wang's Cournot model, γ becomes a policy lever. Tuning it keeps a weaker firm in the market, raises
+        total output, and lowers the price consumers pay, all without touching the firms' costs.</aside>
+
+      <p>The <a href="papers/wang-quantum-game-theory.pdf">survey I built on</a> carries this all the way to
+        <b>Cournot's duopoly</b>, the textbook model of two firms choosing how much to produce. There,
+        entanglement becomes something a government can tune: so long as the market is not too lopsided, a
+        regulator adjusting γ can stop a stronger firm from squeezing out a weaker one, <b>heading off a
+        monopoly</b> while pushing production up and prices down. The dilemma's quantum escape hatch turns into
+        an antitrust instrument.</p>
+
+      <p>I want to be honest about the frontier, as my
+        <a href="papers/adams-quantum-algorithms-economics.pdf">paper</a> is. This is theoretical: critics argue
+        it may restate known economics rather than deliver genuinely new results, and the hardware to run it at
+        scale does not yet exist. But the throughline is real, and it is the question my paper asks:
+        <b>where can quantum algorithms reach economic outcomes, and better outcomes, that classical models
+        cannot?</b> Escaping this dilemma, more collective welfare from the same players and the same payoffs,
+        is the cleanest example I know.</p>
 
       <h2 class="sec"><span class="no">§ IV</span>Reproduce every number</h2>
       <p>The console is an exact state-vector simulation. For a shot-based version on real quantum tooling, the
