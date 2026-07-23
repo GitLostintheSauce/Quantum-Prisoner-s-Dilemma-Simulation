@@ -103,9 +103,9 @@
   .readout{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;margin-top:22px}
   @media(max-width:720px){.readout{grid-template-columns:1fr}}
   .probs .prow{margin-bottom:12px}
-  .probs .pl2{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;margin-bottom:4px}
-  .probs .pl2 .nm b{color:var(--ink)} .probs .pl2 .nm span{color:var(--faint)}
-  .probs .pl2 .pc{color:var(--ink2)}
+  .pl2{display:flex;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:12px;margin-bottom:4px}
+  .pl2 .nm b{color:var(--ink)} .pl2 .nm span{color:var(--faint)}
+  .pl2 .pct{color:var(--ink2);font-family:var(--mono)}
   .track{height:14px;border:1px solid var(--ink);background:var(--paper);position:relative}
   .fill{height:100%;transition:width .25s ease}
   .payff{display:flex;flex-direction:column}
@@ -250,10 +250,10 @@
         <div class="readout">
           <div class="probs">
             <div class="lab" style="margin-bottom:12px">Measurement outcome</div>
-            <div class="prow"><div class="pl2"><span class="nm"><b>CC</b> <span>both cooperate</span></span><span class="pc" id="p00p">100%</span></div><div class="track"><div class="fill" id="p00" style="background:var(--green)"></div></div></div>
-            <div class="prow"><div class="pl2"><span class="nm"><b>CD</b> <span>Alice suckered</span></span><span class="pc" id="p01p">0%</span></div><div class="track"><div class="fill" id="p01" style="background:var(--gold)"></div></div></div>
-            <div class="prow"><div class="pl2"><span class="nm"><b>DC</b> <span>Bob suckered</span></span><span class="pc" id="p10p">0%</span></div><div class="track"><div class="fill" id="p10" style="background:var(--gold)"></div></div></div>
-            <div class="prow"><div class="pl2"><span class="nm"><b>DD</b> <span>both defect</span></span><span class="pc" id="p11p">0%</span></div><div class="track"><div class="fill" id="p11" style="background:var(--rust)"></div></div></div>
+            <div class="prow"><div class="pl2"><span class="nm"><b>CC</b> <span>both cooperate</span></span><span class="pct" id="p00p">100%</span></div><div class="track"><div class="fill" id="p00" style="background:var(--green)"></div></div></div>
+            <div class="prow"><div class="pl2"><span class="nm"><b>CD</b> <span>Alice suckered</span></span><span class="pct" id="p01p">0%</span></div><div class="track"><div class="fill" id="p01" style="background:var(--gold)"></div></div></div>
+            <div class="prow"><div class="pl2"><span class="nm"><b>DC</b> <span>Bob suckered</span></span><span class="pct" id="p10p">0%</span></div><div class="track"><div class="fill" id="p10" style="background:var(--gold)"></div></div></div>
+            <div class="prow"><div class="pl2"><span class="nm"><b>DD</b> <span>both defect</span></span><span class="pct" id="p11p">0%</span></div><div class="track"><div class="fill" id="p11" style="background:var(--rust)"></div></div></div>
           </div>
           <div class="payff">
             <div class="lab" style="margin-bottom:12px">Expected payoff</div>
@@ -369,8 +369,8 @@
             <div class="sld"><label><span>γ: entanglement (the regulator's dial)</span><b id="cgamLab">0.00</b></label>
               <input type="range" id="cgam" min="0" max="2" step="0.001" value="0"></div>
             <div style="margin-top:16px">
-              <div class="prow"><div class="pl2"><span class="nm"><b>Firm 1</b> <span>the weaker firm</span></span><span class="pc" id="q1p">…</span></div><div class="track"><div class="fill" id="q1bar" style="background:var(--rust)"></div></div></div>
-              <div class="prow"><div class="pl2"><span class="nm"><b>Firm 2</b> <span>the leaner rival</span></span><span class="pc" id="q2p">…</span></div><div class="track"><div class="fill" id="q2bar" style="background:var(--violet)"></div></div></div>
+              <div class="prow"><div class="pl2"><span class="nm"><b>Firm 1</b> <span>the weaker firm</span></span><span class="pct" id="q1p">…</span></div><div class="track"><div class="fill" id="q1bar" style="background:var(--rust)"></div></div></div>
+              <div class="prow"><div class="pl2"><span class="nm"><b>Firm 2</b> <span>the leaner rival</span></span><span class="pct" id="q2p">…</span></div><div class="track"><div class="fill" id="q2bar" style="background:var(--violet)"></div></div></div>
             </div>
             <div class="pcards" style="margin-top:16px">
               <div class="pc"><div class="w">Total output</div><div class="v" id="Qval" style="font-size:1.7rem">…</div></div>
