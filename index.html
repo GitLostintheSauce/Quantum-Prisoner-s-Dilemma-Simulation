@@ -41,7 +41,7 @@
 
   /* ---------- body / manuscript ---------- */
   article{padding:44px 0 10px}
-  .col{max-width:660px}
+  .col{max-width:660px;display:flow-root}   /* contain hanging marginalia floats */
   .drop::first-letter{initial-letter:3;-webkit-initial-letter:3;font-weight:700;margin-right:12px;color:var(--rust);font-family:var(--disp)}
   p{margin:0 0 20px}
   .col p b{font-weight:700}
@@ -66,7 +66,7 @@
   .paymatrix .bad{color:var(--rust)}
 
   /* ---------- the interactive FIGURE (breaks wider) ---------- */
-  figure.console{margin:40px 0;border:1px solid var(--ink);background:var(--card);
+  figure.console{clear:both;margin:40px 0;border:1px solid var(--ink);background:var(--card);
     box-shadow:7px 7px 0 var(--paper2),7px 7px 0 1px var(--rule)}
   .fcap{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2);
     padding:11px 20px;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
