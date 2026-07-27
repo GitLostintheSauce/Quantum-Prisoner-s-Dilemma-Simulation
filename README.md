@@ -19,7 +19,7 @@ Built as the companion to my paper, *“How can quantum algorithms provide insig
 
 | File | What it is |
 |------|-----------|
-| [`index.html`](index.html) | **The interactive explorer.** An exact 2-qubit state-vector simulator in vanilla JS: strategy pads for both players, an entanglement slider, live payoffs, a payoff-landscape heatmap, and the γ-sweep showing where the dilemma breaks. |
+| [`index.html`](index.html) | **The interactive explorer.** An exact 2-qubit state-vector simulator in vanilla JS: strategy pads for both players, an entanglement slider, live payoffs, a payoff-landscape heatmap, and the γ-sweep showing where the dilemma breaks. Plus § IV, an "antitrust dial" applying the same idea to a Cournot duopoly (see [Status](#status--whats-not-done-yet) for the caveat on that section). |
 | [`notebook/quantum_prisoners_dilemma.ipynb`](notebook/quantum_prisoners_dilemma.ipynb) | The same physics on real quantum tooling (**Qiskit + Aer**): builds the EWL circuit with `Ĵ(γ)` and the `Û(θ,φ)` strategies, verifies payoffs exactly, samples on the simulator, and regenerates both figures. |
 | [`papers/`](papers/) | My paper, plus the survey I built on (Wang, *Advantages and Applications of Quantum Game Theory*, 2022). |
 
@@ -87,6 +87,28 @@ it at scale does not yet exist.
 The browser simulator and the Qiskit notebook are independent implementations that agree to numerical
 precision; both were checked against a NumPy reference reproducing the canonical EWL results
 (Q vs Q → (3,3), D vs D → (1,1), the miracle move Q vs D → (5,0)).
+
+## Status / what's not done yet
+
+The EWL core is finished and cross-validated. These are the honest limits:
+
+- **The Cournot section (§ IV of the page) is not on the same footing as the rest.** It solves a
+  standard quantum-Cournot model in closed form in JavaScript. It is *not* built as a quantum circuit
+  and *not* cross-checked against the Qiskit notebook or the NumPy reference, the way the EWL game is.
+  Treat those figures as illustrating the mechanism, not as reproduced results.
+- **The strategy space is the two-parameter EWL family Û(θ, φ), not full SU(2).** This matters: the
+  (Q,Q) equilibrium is an equilibrium *relative to that restricted set*. Benjamin and Hayden's 1999
+  comment on EWL showed that if players are allowed the full three-parameter SU(2), Q stops being a
+  best response and no pure-strategy equilibrium survives. Every threshold quoted here inherits that
+  assumption.
+- **Everything is an ideal simulation.** State-vector for the exact payoffs, noiseless Aer for the
+  sampling check. No decoherence model, and nothing has been run on real hardware, where the
+  cooperative equilibrium may well be fragile.
+- **The thresholds are verified numerically, not proved here.** § 5 of the notebook finds the best
+  deviation by grid search over (θ, φ) and confirms the crossings land on the known closed forms
+  sin²γ = 1/5 and 2/5. It reproduces those values; it does not derive them.
+- **The payoff matrix is fixed** at the canonical (3, 0, 5, 1). There is no general payoff-matrix
+  explorer, so you cannot yet ask which games have a quantum escape hatch and which do not.
 
 ## Run the notebook
 
